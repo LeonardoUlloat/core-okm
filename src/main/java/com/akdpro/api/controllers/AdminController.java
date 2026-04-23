@@ -44,15 +44,25 @@ public class AdminController {
     // ==========================================
 
     @PostMapping("/lista-negra/banear")
-    // Cambiamos a RequestBody para recibir un JSON desde el front
-    public ResponseEntity<?> banearAlumno(@RequestBody RequestBaneo request) {
+    public ResponseEntity<?> banearAlumno(@RequestBody ListaNegra baneoReq) {
         try {
-            listaNegraService.agregarAListaNegra(request.getRut(), request.getMotivo(), "ADMIN_GENERAL");
+            String nombreAdmin = baneoReq.getAdminResponsable();
+
+            if (nombreAdmin == null || nombreAdmin.isEmpty()) {
+                nombreAdmin = "Admin del Sistema";
+            }
+            // Como baneoReq ya trae el RUT y el Motivo desde Angular:
+            listaNegraService.agregarAListaNegra(
+                    baneoReq.getRut(),
+                    baneoReq.getMotivo(),
+                    nombreAdmin
+            );
             return ResponseEntity.ok("El alumno ha sido expulsado y movido a la Lista Negra.");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
+
 
     // Clase auxiliar (DTO) para recibir los datos del baneo
     public static class RequestBaneo {

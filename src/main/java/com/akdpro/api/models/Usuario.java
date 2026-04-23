@@ -34,8 +34,13 @@ public class Usuario {
 
     private Boolean activo = true;
 
-    @Column(name = "fecha_registro")
-    private LocalDateTime fechaRegistro = LocalDateTime.now();
+    @Column(name = "fecha_registro", updatable = false)
+    private LocalDateTime fechaRegistro;
+
+    @PrePersist
+    protected void onCreate() {
+        this.fechaRegistro = LocalDateTime.now();
+    }
 
     // RELACIONES:
 

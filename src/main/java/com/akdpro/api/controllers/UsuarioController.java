@@ -1,5 +1,7 @@
 package com.akdpro.api.controllers;
 
+import com.akdpro.api.dto.AlumnoGestionDTO;
+import com.akdpro.api.dto.UsuarioDTO;
 import com.akdpro.api.models.Usuario;
 import com.akdpro.api.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +19,18 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     // Listar todos (Útil para el Admin)
-    @GetMapping
-    public List<Usuario> listar() {
-        return usuarioService.listarTodos();
+    @GetMapping("/solo-alumnos")
+    public List<AlumnoGestionDTO> listarSoloAlumnos() {
+        return usuarioService.listarTodos().stream()
+                .filter(u -> "ALUMNO".equals(u.getRol()))
+                .map(u -> new AlumnoGestionDTO(
+                        u.getId(),
+                        u.getRut(),
+                        u.getNombreCompleto(),
+                        u.getEmail(),
+                        u.getSede() != null ? u.getSede().getNombre() : "Sin Sede"
+                ))
+                .toList();
     }
 
     // Buscar por RUT específico
@@ -51,5 +62,11 @@ public class UsuarioController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @GetMapping("/recientes")
+    public ResponseEntity<List<UsuarioDTO>> getUsuariosRecientes() {
+        List<UsuarioDTO> lista = usuarioService.obtenerInscritosSemana();
+        return ResponseEntity.ok(lista);
     }
 }

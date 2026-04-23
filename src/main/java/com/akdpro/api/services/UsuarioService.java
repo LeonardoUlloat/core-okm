@@ -1,5 +1,6 @@
 package com.akdpro.api.services;
 
+import com.akdpro.api.dto.UsuarioDTO;
 import com.akdpro.api.models.Invitacion;
 import com.akdpro.api.models.Usuario;
 import com.akdpro.api.repositories.UsuarioRepository;
@@ -9,10 +10,12 @@ import org.springframework.security.crypto.password.PasswordEncoder; // IMPORTAN
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UsuarioService {
@@ -147,6 +150,19 @@ public class UsuarioService {
         stats.put("ultimasInscripciones", ultimasInscripciones); // <--- AHORA VA CON DATOS
 
         return stats;
+    }
+
+    public List<UsuarioDTO> obtenerInscritosSemana() {
+        LocalDateTime haceUnaSemana = LocalDateTime.now().minusDays(7);
+
+        // Aquí usuarioRepository SÍ funciona
+        List<Usuario> usuarios = usuarioRepository.findByFechaRegistroAfter(haceUnaSemana);
+
+        return usuarios.stream().map(u -> new UsuarioDTO(
+                u.getNombreCompleto(),
+                u.getSede() != null ? u.getSede().getNombre() : "Sin Sede",
+                u.getFechaRegistro()
+        )).collect(Collectors.toList());
     }
 
 }
