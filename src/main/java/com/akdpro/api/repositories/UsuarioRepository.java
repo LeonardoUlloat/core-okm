@@ -12,7 +12,8 @@ import java.util.Optional;
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     Optional<Usuario> findByRut(String rut);
     Optional<Usuario> findByEmail(String email);
-
+    List<Usuario> findByRol(String rol);
+    List<Usuario> findByRolAndActivoTrue(String rol);
     List<Usuario> findByFechaRegistroAfter(LocalDateTime fecha);
 
 }

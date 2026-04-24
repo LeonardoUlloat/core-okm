@@ -18,6 +18,7 @@ public class Pago {
     private String estado; // "PAGADO" o "PENDIENTE"
     private String metodoPago;
     private LocalDateTime fechaPago;
+    private String tokenWebpay;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id") // Crea la llave foránea en la tabla pagos

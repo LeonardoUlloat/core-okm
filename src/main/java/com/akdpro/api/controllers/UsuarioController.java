@@ -69,4 +69,24 @@ public class UsuarioController {
         List<UsuarioDTO> lista = usuarioService.obtenerInscritosSemana();
         return ResponseEntity.ok(lista);
     }
+
+    @GetMapping("/por-sede/{nombreSede:.+}") // El :.+ permite capturar espacios y puntos
+    public List<AlumnoGestionDTO> listarPorSede(@PathVariable String nombreSede) {
+        // TIP: Agrega este print para ver en la consola de Java qué está llegando
+        System.out.println("Buscando alumnos para la sede: [" + nombreSede + "]");
+
+        return usuarioService.listarTodos().stream()
+                .filter(u -> "ALUMNO".equals(u.getRol()))
+                // Usamos trim() para eliminar espacios accidentales al inicio o final
+                .filter(u -> u.getSede() != null &&
+                        nombreSede.trim().equalsIgnoreCase(u.getSede().getNombre().trim()))
+                .map(u -> new AlumnoGestionDTO(
+                        u.getId(),
+                        u.getRut(),
+                        u.getNombreCompleto(),
+                        u.getEmail(),
+                        u.getSede().getNombre()
+                ))
+                .toList();
+    }
 }
